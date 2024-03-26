@@ -102,6 +102,12 @@ class View(object):
             self._txtOutput.controls.append(ft.Text(f'Frase inserita: {self._txtInput.value}\n'
                                                     f'Parole errate: {risultato[0]}\n'
                                                     f'Tempo richiesto dalla ricerca: {risultato[1]}\n'))
+            '''
+            self.page.update()
+            self._txtInput.value = ''
+            self._selzionaLingua = 'None'
+            self._tipoRicerca = 'None'
+            '''
             self.page.update()
         else:
             pass

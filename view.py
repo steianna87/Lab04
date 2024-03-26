@@ -1,5 +1,6 @@
 import flet as ft
 
+
 class View(object):
     def __init__(self, page: ft.Page):
         # Page
@@ -27,15 +28,43 @@ class View(object):
         )
 
         # Add your stuff here
+        # Row 1
 
-        self.page.add([])
+        self._confermaRow1 = ft.Text(value='you MUST select a language')
+        self._selzionaLingua = ft.Dropdown(label='Scelect Language',
+                                           options=[ft.dropdown.Option('None'), ft.dropdown.Option('italian'),
+                                                    ft.dropdown.Option('english'),
+                                                    ft.dropdown.Option('spanish')], width=750,
+                                           on_change=self.confermaSelezione1
+                                           )
+        row1 = ft.Row([self._selzionaLingua, self._confermaRow1])
+
+        # Row 2
+        self._confermaRow2 = ft.Text(value='you MUST select a type')
+        self._tipoRicerca = ft.Dropdown(label='Select search type',
+                                        options=[ft.dropdown.Option('None'), ft.dropdown.Option('Default'),
+                                                 ft.dropdown.Option('Linear'),
+                                                 ft.dropdown.Option('Dichotomic')],
+                                        on_change=self.confermaSelezione2
+                                        )
+        self._txtInput = ft.TextField(label='Insert your text')
+        self._searchButton = ft.ElevatedButton(text='Spell Check', on_click=self.handleSpellCheck)
+        row2 = ft.Row([self._tipoRicerca, self._txtInput, self._searchButton, self._confermaRow2])
+
+        # Row 3
+        self._txtOutput = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
+        row3 = ft.Row([])
+
+        self.page.add(row1, row2, self._txtOutput)
 
         self.page.update()
 
     def update(self):
         self.page.update()
+
     def setController(self, controller):
         self.__controller = controller
+
     def theme_changed(self, e):
         """Function that changes the color theme of the app, when the corresponding
         switch is triggered"""
@@ -51,3 +80,28 @@ class View(object):
         #     ft.colors.GREY_900 if self.page.theme_mode == ft.ThemeMode.DARK else ft.colors.GREY_300
         # )
         self.page.update()
+
+    def confermaSelezione1(self, e):
+        if self._selzionaLingua.value == 'None':
+            self._confermaRow1.value = 'you MUST select a language'
+        else:
+            self._confermaRow1.value = 'selected language'
+        self.page.update()
+
+    def confermaSelezione2(self, e):
+        if self._tipoRicerca.value == 'None':
+            self._confermaRow2.value = 'you MUST select a type'
+        else:
+            self._confermaRow2.value = 'selected type'
+        self.page.update()
+
+    def handleSpellCheck(self, e):
+        if self._selzionaLingua.value != 'None' and self._tipoRicerca.value != 'None' and self._txtInput.value != '':
+            risultato = self.__controller.handleSentence(self._txtInput.value, self._selzionaLingua.value,
+                                             self._tipoRicerca.value)
+            self._txtOutput.controls.append(ft.Text(f'Frase inserita: {self._txtInput.value}\n'
+                                                    f'Parole errate: {risultato[0]}\n'
+                                                    f'Tempo richiesto dalla ricerca: {risultato[1]}\n'))
+            self.page.update()
+        else:
+            pass
